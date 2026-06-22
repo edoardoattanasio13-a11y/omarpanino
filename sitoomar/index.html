@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il Panino da Omar — Paninoteca Livorno</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bordeaux: #6b1320;
+    --bordeaux-dark: #4a0a14;
+    --giallo: #f5c518;
+    --giallo-soft: #ffd84a;
+    --crema: #fff8e7;
+    --rosso: #d62828;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Fredoka', system-ui, sans-serif;
+    background: var(--bordeaux);
+    color: var(--crema);
+  }
+  .font-bungee { font-family: 'Bungee', cursive; letter-spacing: 0.02em; }
+  .font-hand { font-family: 'Caveat', cursive; }
+
+  /* Background pattern */
+  .bg-paper {
+    background-color: var(--bordeaux);
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(245,197,24,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(245,197,24,0.06) 0%, transparent 40%),
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 2px, transparent 2px 14px);
+  }
+
+  /* Sticker / stamp effect */
+  .sticker {
+    background: var(--giallo);
+    color: #1a0508;
+    border-radius: 999px;
+    box-shadow: 0 6px 0 var(--bordeaux-dark), 0 8px 18px rgba(0,0,0,0.35);
+    transform: rotate(-3deg);
+  }
+  .sticker-yellow-burst {
+    background: var(--rosso);
+    color: var(--crema);
+    clip-path: polygon(50% 0%,61% 12%,75% 5%,79% 21%,95% 18%,90% 34%,100% 45%,86% 55%,100% 70%,82% 73%,86% 90%,68% 84%,60% 100%,50% 86%,40% 100%,32% 84%,14% 90%,18% 73%,0 70%,14% 55%,0 45%,10% 34%,5% 18%,21% 21%,25% 5%,39% 12%);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-family: 'Bungee', cursive;
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.4));
+  }
+
+  /* Card */
+  .panino-card {
+    background: linear-gradient(180deg, #5a0f1a 0%, #4a0a14 100%);
+    border: 2px solid rgba(245,197,24,0.25);
+    border-radius: 22px;
+    transition: transform .35s cubic-bezier(.175,.885,.32,1.275), box-shadow .35s, border-color .35s;
+    position: relative;
+    overflow: hidden;
+  }
+  .panino-card::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% -20%, rgba(245,197,24,0.18), transparent 60%);
+    pointer-events: none;
+  }
+  .panino-card:hover {
+    transform: translateY(-6px) rotate(-0.5deg);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    border-color: var(--giallo);
+  }
+
+  .price-tag {
+    background: var(--giallo);
+    color: #1a0508;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    box-shadow: 0 3px 0 var(--bordeaux-dark), 0 6px 14px rgba(0,0,0,0.45);
+    font-family: 'Bungee', cursive;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    position: relative;
+    z-index: 20;
+  }
+
+  /* Hero floating logo */
+  @keyframes floaty {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-14px) rotate(2deg); }
+  }
+  .floaty { animation: floaty 4s ease-in-out infinite; }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .spin-slow { animation: spin-slow 18s linear infinite; }
+
+  /* Hide horizontal scrollbar (mobile tabs) */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Tab buttons */
+  .tab-btn {
+    background: rgba(0,0,0,0.25);
+    border: 2px solid rgba(245,197,24,0.3);
+    color: var(--crema);
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all .25s;
+    font-family: 'Bungee', cursive;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+  .tab-btn:hover { border-color: var(--giallo); }
+  .tab-btn.active {
+    background: var(--giallo);
+    color: #1a0508;
+    border-color: var(--giallo);
+    box-shadow: 0 4px 0 var(--bordeaux-dark);
+  }
+
+  /* Section title */
+  .section-title {
+    font-family: 'Caveat', cursive;
+    color: var(--giallo);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    line-height: 0.9;
+    transform: rotate(-1.5deg);
+    display: inline-block;
+    text-shadow: 4px 4px 0 var(--bordeaux-dark);
+  }
+
+  /* Ingredient chip */
+  .chip {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(245,197,24,0.25);
+    color: var(--crema);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip:hover { background: rgba(245,197,24,0.1); border-color: var(--giallo); }
+  .chip.selected {
+    background: var(--giallo);
+    color: #1a0508;
+    border-color: var(--giallo);
+    font-weight: 600;
+  }
+  .chip .chip-price { font-size: 0.7rem; opacity: 0.7; }
+  .chip.selected .chip-price { opacity: 1; }
+
+  /* Tape effect */
+  .tape {
+    position: absolute;
+    width: 90px; height: 22px;
+    background: rgba(245,197,24,0.55);
+    top: -10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+  .tape-l { left: 20px; transform: rotate(-6deg); }
+  .tape-r { right: 20px; transform: rotate(7deg); }
+
+  /* Nav */
+  .nav-link { transition: color .2s; }
+  .nav-link:hover { color: var(--giallo); }
+
+  /* Phone float (desktop) */
+  .phone-float {
+    position: fixed; bottom: 24px; right: 24px; z-index: 100;
+    background: var(--giallo); color: #1a0508;
+    height: 56px; padding: 0 22px; border-radius: 999px;
+    display: none; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 6px 0 var(--bordeaux-dark), 0 10px 26px rgba(0,0,0,0.45);
+    font-family: 'Bungee', cursive; font-size: 0.9rem;
+    animation: floaty 3.5s ease-in-out infinite;
+  }
+  .phone-float:hover { transform: scale(1.05); }
+  @media (min-width: 768px) { .phone-float { display: inline-flex; } }
+
+  /* Mobile sticky CTA bar */
+  .mobile-cta {
+    position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 100;
+    display: flex; gap: 10px;
+    background: rgba(20, 5, 8, 0.92); backdrop-filter: blur(10px);
+    border: 2px solid rgba(245,197,24,0.4);
+    border-radius: 999px; padding: 8px;
+  }
+  .mobile-cta a {
+    flex: 1; text-align: center; padding: 12px 14px; border-radius: 999px;
+    font-family: 'Bungee', cursive; font-size: 0.85rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .mobile-cta .cta-call { background: var(--giallo); color: #1a0508; }
+  .mobile-cta .cta-menu { background: rgba(255,255,255,0.08); color: var(--crema); border: 1.5px solid rgba(245,197,24,0.4); }
+  @media (min-width: 768px) { .mobile-cta { display: none; } }
+
+  /* MENU — list paper style (not e-commerce) */
+  .menu-search {
+    width: 100%; max-width: 480px;
+    background: rgba(0,0,0,0.3); border: 2px solid rgba(245,197,24,0.3);
+    color: var(--crema); border-radius: 999px;
+    padding: 12px 20px 12px 46px; font-size: 0.95rem; font-family: 'Fredoka', sans-serif;
+    transition: border-color .2s;
+  }
+  .menu-search:focus { outline: none; border-color: var(--giallo); }
+  .menu-search::placeholder { color: rgba(255,248,231,0.5); }
+
+  .menu-board {
+    background: linear-gradient(180deg, #5a0f1a 0%, #4a0a14 100%);
+    border: 2px solid rgba(245,197,24,0.3);
+    border-radius: 26px;
+    padding: 28px 24px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  .menu-board-title {
+    font-family: 'Bungee', cursive;
+    color: var(--giallo);
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    text-align: center;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 2px dashed rgba(245,197,24,0.3);
+    text-transform: uppercase;
+  }
+  .menu-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 14px;
+    padding: 14px 4px;
+    border-bottom: 1px dashed rgba(245,197,24,0.18);
+    align-items: start;
+    position: relative;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-item-name {
+    font-family: 'Bungee', cursive;
+    color: var(--crema);
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .menu-item-desc {
+    font-size: 0.88rem;
+    color: rgba(255,248,231,0.7);
+    line-height: 1.45;
+    grid-column: 1 / -1;
+  }
+  .menu-item-price {
+    font-family: 'Bungee', cursive;
+    color: var(--giallo);
+    font-size: 1.05rem;
+    white-space: nowrap;
+    text-shadow: 0 2px 0 var(--bordeaux-dark);
+  }
+  .badge-novita {
+    background: var(--rosso); color: var(--crema);
+    font-family: 'Bungee', cursive; font-size: 0.55rem;
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.08em;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .badge-veg {
+    background: #4a7c2a; color: var(--crema);
+    font-family: 'Bungee', cursive; font-size: 0.55rem;
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.08em;
+  }
+
+  .empty-state {
+    text-align: center; padding: 30px 16px;
+    color: rgba(255,248,231,0.7);
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+  }
+
+  /* Bibite list */
+  .bib-row { display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px dashed rgba(245,197,24,0.25); }
+  .bib-row:last-child { border-bottom: none; }
+
+  /* Cartoon Omar SVG container */
+  .omar-circle {
+    background: radial-gradient(circle, var(--giallo) 0%, var(--giallo-soft) 60%, transparent 70%);
+  }
+</style>
+</head>
+<body class="bg-paper overflow-x-hidden">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 backdrop-blur-md" style="background: rgba(74,10,20,0.92); border-bottom: 2px solid rgba(245,197,24,0.25);">
+  <div class="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between">
+    <a href="#hero" class="flex items-center">
+      <img src="assets/omar-logo.png" alt="Omar Paninoteca Livorno" class="h-20 md:h-28 w-auto my-[-1rem] md:my-[-1.5rem]" />
+    </a>
+    <div class="hidden md:flex items-center gap-7 text-sm font-semibold">
+      <a href="#menu" class="nav-link">Menu</a>
+      <a href="#componi" class="nav-link">Componi il tuo</a>
+      <a href="#bibite" class="nav-link">Bibite</a>
+      <a href="#contatti" class="nav-link">Dove siamo</a>
+    </div>
+    <a href="tel:+393406705066" class="sticker inline-flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-bungee whitespace-nowrap">
+      <iconify-icon icon="ph:phone-fill"></iconify-icon>
+      <span>340 670 5066</span>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="relative pt-12 pb-20 px-6">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+    <div class="relative z-10">
+      <p class="font-hand text-3xl md:text-4xl" style="color: var(--giallo);">Boia dé, che panini!</p>
+      <h1 class="sr-only">Il Panino da Omar</h1>
+      <img src="assets/omar-hero-logo.png" alt="Il Panino da Omar" class="w-full max-w-[520px] mt-2 -mb-8" />
+      <p class="text-lg md:text-xl opacity-90 max-w-lg">
+        La paninoteca livornese in <strong>Piazza XI Maggio</strong>. Ingredienti scelti, ricette di scuola e qualche follia. Sul posto, da asporto o a domicilio.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="#menu" class="sticker px-6 py-3 font-bungee text-sm inline-flex items-center gap-2">
+          <iconify-icon icon="ph:fork-knife-fill"></iconify-icon> Vedi il menu
+        </a>
+        <a href="#contatti" class="px-6 py-3 rounded-full font-bungee text-sm inline-flex items-center gap-2 border-2"
+           style="border-color: var(--giallo); color: var(--crema);">
+          <iconify-icon icon="ph:map-pin-fill"></iconify-icon> Come arrivare
+        </a>
+      </div>
+
+      <div class="mt-10 flex flex-wrap gap-6 text-sm">
+        <div class="flex items-center gap-2">
+          <iconify-icon icon="ph:star-fill" style="color: var(--giallo);" class="text-xl"></iconify-icon>
+          <span><strong>4,7</strong> · +350 recensioni Google</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <iconify-icon icon="ph:moped-fill" style="color: var(--giallo);" class="text-xl"></iconify-icon>
+          <span>Domicilio: 11.30–14.30 / 18.30–21.30</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative flex justify-center items-center min-h-[460px]">
+      <div class="relative floaty">
+        <img src="assets/omar-personaggio.png" alt="Omar con il panino" class="w-[300px] md:w-[420px] drop-shadow-2xl" />
+      </div>
+
+      <!-- Floating badges -->
+      <div class="absolute top-6 right-2 sticker px-4 py-2 text-xs font-bungee" style="transform: rotate(8deg);">
+        <iconify-icon icon="ph:star-fill" class="inline"></iconify-icon> 4,7 ★
+      </div>
+      <div class="absolute bottom-12 left-0 sticker px-4 py-2 text-xs font-bungee" style="transform: rotate(-10deg);">
+        Boia che qualità!!
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu" class="px-6 py-20" style="background: var(--bordeaux-dark);">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-10">
+      <p class="font-hand text-2xl opacity-90" style="color: var(--giallo);">Ecco i nostri panini</p>
+      <h2 class="section-title">Il Menu</h2>
+    </div>
+
+    <!-- Search -->
+    <div class="flex justify-center mb-6">
+      <div class="relative w-full max-w-[480px]">
+        <iconify-icon icon="ph:magnifying-glass-bold"
+          class="absolute left-4 top-1/2 -translate-y-1/2 text-xl pointer-events-none"
+          style="color: var(--giallo);"></iconify-icon>
+        <input id="menuSearch" type="search" class="menu-search"
+               placeholder="Cerca un panino o un ingrediente…" autocomplete="off" />
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-2 md:gap-3 mb-10 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide" id="menuTabs">
+      <button class="tab-btn active flex-shrink-0" data-cat="classici">Classici</button>
+      <button class="tab-btn flex-shrink-0" data-cat="vecchia">Vecchia Scuola</button>
+      <button class="tab-btn flex-shrink-0" data-cat="speciali">Speciali e Novità</button>
+      <button class="tab-btn flex-shrink-0" data-cat="veggie">Veggie &amp; Vegan</button>
+      <button class="tab-btn flex-shrink-0" data-cat="tifidi">Ti Fidi</button>
+    </div>
+
+    <div id="menuList" class="space-y-8"></div>
+
+    <!-- Fritti -->
+    <div class="mt-10 menu-board">
+      <div class="menu-board-title">Fritti</div>
+      <div class="empty-state">
+        <iconify-icon icon="ph:cooking-pot-fill" style="color: var(--giallo); font-size: 2.5rem;"></iconify-icon>
+        <p class="mt-2">Le proposte fritte cambiano ogni giorno.</p>
+        <p class="opacity-80 text-base font-sans mt-2">
+          Chiedi al banco o chiama il
+          <a href="tel:+393406705066" class="underline" style="color: var(--giallo);">340 670 5066</a>
+          per sapere cosa sta sfrigolando in cucina.
+        </p>
+      </div>
+    </div>
+
+    <!-- Componi CTA card -->
+    <div class="mt-10 menu-board text-center" style="background: linear-gradient(135deg, #5a0f1a 0%, #4a0a14 60%, #6b1320 100%);">
+      <p class="font-hand text-3xl mb-2" style="color: var(--giallo);">Non trovi quello che vuoi?</p>
+      <h3 class="font-bungee text-2xl md:text-3xl mb-1">COMPONI IL TUO PANINO</h3>
+      <p class="font-bungee text-lg mb-4" style="color: var(--giallo);">DA € 6,00</p>
+      <p class="opacity-80 max-w-xl mx-auto mb-6">Scegli affettato o carne + salsa, e aggiungi formaggi e verdure a piacere.</p>
+      <a href="#componi" class="sticker inline-flex items-center gap-2 px-6 py-3 font-bungee text-sm">
+        <iconify-icon icon="ph:hand-pointing-fill"></iconify-icon> Vai al configuratore
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONI IL TUO -->
+<section id="componi" class="px-6 py-20">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-10">
+      <p class="font-hand text-2xl opacity-90" style="color: var(--giallo);">Sbizzarrisciti</p>
+      <h2 class="section-title">Componi il tuo Panino</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-10">
+      <button class="panino-card p-6 text-left base-btn" data-base="affettato">
+        <div class="flex flex-nowrap items-center justify-between gap-3 mb-3">
+          <span class="font-bungee text-base md:text-xl whitespace-nowrap" style="color: var(--giallo);">AFFETTATO + SALSA</span>
+          <span class="price-tag flex-shrink-0">€ 6,00</span>
+        </div>
+        <p class="opacity-70 text-sm">Base con un affettato a scelta + una salsa.</p>
+      </button>
+      <button class="panino-card p-6 text-left base-btn" data-base="carne">
+        <div class="flex flex-nowrap items-center justify-between gap-3 mb-3">
+          <span class="font-bungee text-base md:text-xl whitespace-nowrap" style="color: var(--giallo);">CARNE + SALSA</span>
+          <span class="price-tag flex-shrink-0">€ 7,00</span>
+        </div>
+        <p class="opacity-70 text-sm">Base con una carne a scelta + una salsa.</p>
+      </button>
+    </div>
+
+    <div class="space-y-8" id="componiIngr">
+      <!-- Affettati / Carne (dynamic) -->
+      <div>
+        <h3 class="font-bungee mb-3" style="color: var(--giallo);">1. Scegli la <span id="baseLabel">base</span></h3>
+        <div class="flex flex-wrap gap-2" id="baseList"></div>
+      </div>
+      <div>
+        <h3 class="font-bungee mb-3" style="color: var(--giallo);">2. Aggiungi una salsa</h3>
+        <div class="flex flex-wrap gap-2" id="salseList"></div>
+      </div>
+      <div>
+        <h3 class="font-bungee mb-3" style="color: var(--giallo);">3. Formaggi <span class="text-xs opacity-60 font-sans">(extra)</span></h3>
+        <div class="flex flex-wrap gap-2" id="formaggiList"></div>
+      </div>
+      <div>
+        <h3 class="font-bungee mb-3" style="color: var(--giallo);">4. Verdure <span class="text-xs opacity-60 font-sans">(extra)</span></h3>
+        <div class="flex flex-wrap gap-2" id="verdureList"></div>
+      </div>
+    </div>
+
+    <!-- Riepilogo -->
+    <div class="mt-10 panino-card p-6 md:p-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bungee text-2xl" style="color: var(--giallo);">Il tuo panino</h3>
+        <span class="price-tag text-base" id="totale">€ 0,00</span>
+      </div>
+      <ul id="riepilogo" class="space-y-1 text-sm opacity-90 mb-5">
+        <li class="opacity-60 italic">Seleziona la base per iniziare…</li>
+      </ul>
+      <div class="flex flex-wrap gap-3 items-center">
+        <a id="ordinaTel" href="tel:+393406705066"
+           class="sticker inline-flex items-center gap-2 px-6 py-3 font-bungee text-sm">
+          <iconify-icon icon="ph:phone-fill" class="text-xl"></iconify-icon>
+          Chiama per ordinare
+        </a>
+        <button id="copiaRiepilogo" type="button"
+           class="inline-flex items-center gap-2 px-5 py-3 rounded-full font-bungee text-xs border-2"
+           style="border-color: var(--giallo); color: var(--crema);">
+          <iconify-icon icon="ph:copy-fill"></iconify-icon> Copia riepilogo
+        </button>
+        <span id="copiaOk" class="text-xs opacity-0 transition-opacity font-hand text-xl" style="color: var(--giallo);">Copiato!</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BIBITE -->
+<section id="bibite" class="px-6 py-20" style="background: var(--bordeaux-dark);">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <p class="font-hand text-2xl opacity-90" style="color: var(--giallo);">Per accompagnare</p>
+      <h2 class="section-title">Listino Bibite</h2>
+    </div>
+    <div class="panino-card p-6 md:p-10 grid md:grid-cols-2 gap-x-12 gap-y-1" id="bibiteList"></div>
+  </div>
+</section>
+
+<!-- CONTATTI -->
+<section id="contatti" class="px-6 py-20">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12">
+      <p class="font-hand text-2xl opacity-90" style="color: var(--giallo);">Vieni a trovarci</p>
+      <h2 class="section-title">Dove siamo</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="panino-card p-8 relative">
+        <h3 class="font-bungee text-2xl mb-6" style="color: var(--giallo);">Il Panino da Omar</h3>
+
+        <div class="space-y-5">
+          <div class="flex items-start gap-3">
+            <iconify-icon icon="ph:map-pin-fill" class="text-2xl mt-0.5" style="color: var(--giallo);"></iconify-icon>
+            <div>
+              <div class="font-semibold">Piazza XI Maggio, 8</div>
+              <div class="opacity-70 text-sm">57122 Livorno (LI)</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <iconify-icon icon="ph:phone-fill" class="text-2xl mt-0.5" style="color: var(--giallo);"></iconify-icon>
+            <a href="tel:+393406705066" class="hover:underline">340 670 5066</a>
+          </div>
+          <div class="flex items-start gap-3">
+            <iconify-icon icon="ph:clock-fill" class="text-2xl mt-0.5" style="color: var(--giallo);"></iconify-icon>
+            <div class="text-sm">
+              <div class="font-semibold mb-1">Da lunedì a sabato</div>
+              <div>11.00 – 15.00 · 16.30 – 21.30</div>
+              <div class="mt-2 font-semibold">Domicilio</div>
+              <div>11.30 – 14.30 · 18.30 – 21.30</div>
+              <div class="mt-2 opacity-70">Chiusi la domenica</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <iconify-icon icon="ph:instagram-logo-fill" class="text-2xl mt-0.5" style="color: var(--giallo);"></iconify-icon>
+            <a href="https://www.instagram.com/ilpaninodaomar/" target="_blank" rel="noopener" class="hover:underline">@ilpaninodaomar</a>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-yellow-500/20">
+          <p class="text-sm opacity-80 mb-3">Per prenotazioni dalle 11.00 alle 21.00 chiama il numero:</p>
+          <a href="tel:+393406705066" class="sticker inline-flex items-center gap-2 px-5 py-3 font-bungee text-sm">
+            <iconify-icon icon="ph:phone-fill"></iconify-icon> 340 670 5066
+          </a>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=Piazza+XI+Maggio+8+57122+Livorno" target="_blank"
+             class="ml-2 inline-flex items-center gap-2 px-5 py-3 rounded-full font-bungee text-sm border-2"
+             style="border-color: var(--giallo); color: var(--crema);">
+            <iconify-icon icon="ph:map-pin-fill"></iconify-icon> Apri in Maps
+          </a>
+        </div>
+      </div>
+
+      <div class="rounded-3xl overflow-hidden border-4" style="border-color: var(--giallo); min-height: 420px;">
+        <iframe
+          src="https://www.google.com/maps?q=Il+Panino+da+Omar,+Piazza+XI+Maggio+8,+57122+Livorno&output=embed"
+          width="100%" height="100%" style="border:0; min-height:420px;"
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="px-6 py-20 text-center" style="background: var(--bordeaux-dark);">
+  <div class="max-w-3xl mx-auto">
+    <p class="font-hand text-3xl md:text-4xl mb-3" style="color: var(--giallo);">Hai fame?</p>
+    <h2 class="font-bungee text-4xl md:text-6xl leading-none mb-6">
+      CHIAMA <span style="color: var(--giallo);">ORA</span>
+    </h2>
+    <p class="opacity-85 text-lg mb-8 max-w-xl mx-auto">
+      Per prenotare, ordinare l'asporto o farti consegnare i panini a casa. Dalle <strong>11.00 alle 21.00</strong>.
+    </p>
+    <a href="tel:+393406705066"
+       class="sticker inline-flex items-center gap-3 px-8 py-5 font-bungee text-lg md:text-2xl">
+      <iconify-icon icon="ph:phone-fill" class="text-2xl"></iconify-icon>
+      340 670 5066
+    </a>
+    <p class="mt-6 text-sm opacity-70">
+      Domicilio: 11.30–14.30 / 18.30–21.30 · Chiusi la domenica
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="px-6 py-10 pb-28 md:pb-10" style="background: var(--bordeaux-dark); border-top: 2px solid rgba(245,197,24,0.25);">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+    <img src="assets/omar-logo.png" alt="Il Panino da Omar" class="h-14 md:h-16 w-auto" />
+    <div class="opacity-70 text-center">© 2026 · Piazza XI Maggio 8, Livorno · 340 670 5066</div>
+    <div class="font-hand text-xl" style="color: var(--giallo);">Boia dé, ciao!</div>
+  </div>
+</footer>
+
+<!-- Desktop phone float -->
+<a href="tel:+393406705066" class="phone-float" aria-label="Chiama">
+  <iconify-icon icon="ph:phone-fill" class="text-xl"></iconify-icon>
+  <span>340 670 5066</span>
+</a>
+
+<!-- Mobile sticky CTA bar -->
+<div class="mobile-cta" role="navigation" aria-label="Azioni rapide">
+  <a href="#menu" class="cta-menu">
+    <iconify-icon icon="ph:fork-knife-fill"></iconify-icon> Menu
+  </a>
+  <a href="tel:+393406705066" class="cta-call">
+    <iconify-icon icon="ph:phone-fill"></iconify-icon> Chiama
+  </a>
+</div>
+
+<script>
+const MENU = {
+  classici: [
+    { n: "P. San Marco", d: "Crudo, salsa verde, melanzane", p: "7,00" },
+    { n: "Boia Dé", d: "Crudo, salsa verde, melanzane, cipolle, pomo pachino", p: "8,00" },
+    { n: "Ci 'Onci", d: "Crudo, bufala, pomo pachino", p: "8,00" },
+    { n: "Livorno", d: "Roastbeef, salsa verde, melanzane", p: "8,00" },
+    { n: "Tiramelo Su", d: "Roastbeef, salsa verde, salsa piccante, melanzane, cipolle", p: "8,50" },
+    { n: "Ciacchecchini", d: "Arista, salsa verde, melanzane", p: "7,50" },
+    { n: "Ciò Furia", d: "Arista, salsa tonnata, insalata, pomo pachino", p: "7,50" },
+    { n: "Guarda Lui Lì", d: "Salame toscano, salsa verde, pecorino", p: "7,00" },
+    { n: "Semplicino", d: "Cotto, salsa rosa, pecorino", p: "7,00" },
+    { n: "Leggerina", d: "Bresaola, rucola, pomo pachino, mozzarella", p: "8,00" },
+  ],
+  vecchia: [
+    { n: "Tavolone", d: "Spalla, salsa piccante, stracciatella, rucola, cipolle, pomo pachino", p: "9,00" },
+    { n: "Lucarelli", d: "Roastbeef, stracciatella, salsa verde, pomo pachino, melanzane, cipolle", p: "9,00" },
+    { n: "Te Lo Dio", d: "Roastbeef, stracciatella, rucola, pomo pachino, melanzane", p: "9,00" },
+    { n: "Nonno Nedo", d: "Roastbeef, salsa verde, porcini, cipolle, pecorino", p: "9,00" },
+    { n: "Tanta Roba", d: "Crudo, salsa rosa, porcini, pecorino", p: "8,50" },
+    { n: "Gigione", d: "Crudo, crema porcini, pomo pachino, melanzane, cipolle caramellate", p: "9,00" },
+    { n: "Fai Vaini", d: "Mortadella, salsa al tartufo, pomo pachino, pecorino piccante", p: "8,50" },
+    { n: "Regali Fii", d: "Crudo, gorgonzola, melanzane, cipolle caramellate", p: "9,00" },
+    { n: "Sai 'Osa", d: "Cotto, salsa rosa, insalata, pomo pachino, mozzarella", p: "8,00" },
+    { n: "Deliato", d: "Cotto, salsa rosa, funghi misti, rucola, pomo pachino, pecorino", p: "8,50" },
+  ],
+  speciali: [
+    { n: "Gavinoso", d: "Crudo di Parma, pomo secco, stracciatella tartufata", p: "9,00" },
+    { n: "Vieni Dé", d: "Cotto arrosto, salsa tartufo, salsa cipolle, rucola, melanzane, pecorino", p: "9,00" },
+    { n: "Garoso", d: "Spalla, salsa di cipolla, rucola, pomo secco, pecorino", p: "9,00" },
+    { n: "Sei Sconcio", d: "Mortadella, stracciatella, pomo secco, granella pistacchio", p: "9,00" },
+    { n: "Protti", d: "Salame piccante, salsa di cipolle, rucola, peperoni, melanzane, pecorino piccante", p: "9,00" },
+    { n: "Arrondemen", d: "Arista, salsa piccante, rucola, melanzane, fagioli all'uccelletta", p: "8,50" },
+    { n: "0586", d: "Salsiccia cruda, gorgonzola, cipolle caramellate, melanzane", p: "9,00", novita: true },
+    { n: "Basola", d: "Crudo di Parma, crema pecorino, rucola, pomo secco, melanzane, salsa di cipolle caramellate", p: "10,00", novita: true },
+    { n: "Stai Calmo", d: "Roast beef, salsa di cipolle caramellate, patate arrosto, melanzane", p: "9,00", novita: true },
+    { n: "Appoggialo Lì", d: "Spalla, stracciatella al tartufo, rucola, pomo secco, cipolle caramellate", p: "9,00", novita: true },
+    { n: "Fate Ammodo", d: "Crudo, salsa rosa, salsa verde, cipolle caramellate, melanzane, pecorino", p: "9,00", novita: true },
+  ],
+  veggie: [
+    { n: "Vegebomb", d: "Stracciatella, insalata, pomo pachino, zucchine, peperoni, cipolle caramellate", p: "8,50", novita: true, veg: true },
+    { n: "Vegeclassic", d: "Stracciatella al tartufo, salsa di cipolle caramellate, insalata, peperoni, carciofi, melanzane, pecorino", p: "8,50", novita: true, veg: true },
+    { n: "Veganito", d: "Salsa di porcini, salsa piccante, rucola, fagioli, cipolle, peperoni, zucchine", p: "8,00", novita: true, veg: true },
+  ],
+  tifidi: [
+    { n: "Affettato e fantasia", d: "Lascia fare a Omar — un panino con affettato a sorpresa", p: "8,50" },
+    { n: "Carne e fantasia", d: "Lascia fare a Omar — un panino con carne a sorpresa", p: "9,50" },
+    { n: "Vege e fantasia", d: "Lascia fare a Omar — un panino vegetariano a sorpresa", p: "8,00", veg: true },
+  ],
+  fritti: [],
+};
+
+const CAT_LABELS = {
+  classici: "Classici",
+  vecchia: "Vecchia Scuola",
+  speciali: "Speciali e Novità",
+  veggie: "Veggie & Vegan",
+  tifidi: "Ti Fidi",
+  fritti: "Fritti",
+};
+
+const BIBITE = [
+  ["Coca Cola 1,5 L", "4,00"],
+  ["Coca lattina", "2,00"],
+  ["Bibite vetro", "3,00"],
+  ["Moretti 33 cl", "2,50"],
+  ["Moretti 66 cl", "4,00"],
+  ["Tennent's", "3,50"],
+  ["Messina", "3,50"],
+  ["Ceres", "3,50"],
+  ["Beck's", "3,50"],
+  ["Birra Ichnusa (non filtrata)", "3,50"],
+];
+
+const ING = {
+  affettato: [
+    { n: "Crudo di Parma", p: 0 },
+    { n: "Cotto", p: 0 },
+    { n: "Salame toscano", p: 0 },
+    { n: "Mortadella", p: 0 },
+    { n: "Bresaola", p: 0 },
+    { n: "Spalla", p: 0 },
+  ],
+  carne: [
+    { n: "Roastbeef", p: 0 },
+    { n: "Arista", p: 0 },
+    { n: "Salsiccia cruda", p: 0 },
+    { n: "Roast beef speziato", p: 0 },
+  ],
+  salse: [
+    "Crema porcini","Granella di pistacchio","Salsa cipolle","Salsa tartufo","Salsa verde","Salsa rosa","Salsa tonnata","Salsa piccante","Salsa carciofi"
+  ].map(n => ({n, p: 0})),
+  formaggi: [
+    {n:"Crema pecorino", p:2.00},{n:"Pecorino", p:1.00},{n:"Pecorino piccante", p:1.50},
+    {n:"Stracciatella", p:1.50},{n:"Stracciatella al tartufo", p:2.00},{n:"Gorgonzola", p:1.50},
+    {n:"Fontina", p:1.00},{n:"Mozzarella", p:1.00},{n:"Bufala", p:1.50},
+  ],
+  verdure: [
+    {n:"Porcini",p:1.50},{n:"Cipolle caramellate",p:1.00},{n:"Melanzane",p:1.00},
+    {n:"Pomo secco",p:1.00},{n:"Funghi misti",p:1.00},{n:"Fagioli",p:1.00},
+    {n:"Peperoni",p:1.00},{n:"Carciofi",p:1.00},{n:"Zucchine",p:0.50},
+    {n:"Cipolla",p:0.50},{n:"Insalata",p:0.50},{n:"Rucola",p:0.50},{n:"Pomodori",p:0.50},
+  ],
+};
+
+// MENU rendering — list "paper" style
+let currentCat = 'classici';
+let currentQuery = '';
+
+const FRITTI_EMPTY_HTML = `
+  <div class="empty-state">
+    <iconify-icon icon="ph:cooking-pot-fill" style="color: var(--giallo); font-size: 2.5rem;"></iconify-icon>
+    <p class="mt-2">Le proposte fritte cambiano ogni giorno.</p>
+    <p class="opacity-80 text-base font-sans mt-2">
+      Chiedi al banco o chiama il <a href="tel:+393406705066" class="underline" style="color: var(--giallo);">340 670 5066</a>
+      per sapere cosa sta sfrigolando in cucina.
+    </p>
+  </div>
+`;
+
+function matchesQuery(item, q) {
+  if (!q) return true;
+  q = q.toLowerCase();
+  return item.n.toLowerCase().includes(q) || (item.d || '').toLowerCase().includes(q);
+}
+
+function renderBoard(catKey, items) {
+  if (catKey === 'fritti' && items.length === 0) {
+    return `<div class="menu-board"><div class="menu-board-title">${CAT_LABELS[catKey]}</div>${FRITTI_EMPTY_HTML}</div>`;
+  }
+  if (items.length === 0) {
+    return `<div class="menu-board"><div class="menu-board-title">${CAT_LABELS[catKey]}</div>
+      <div class="empty-state">Nessun panino corrisponde alla ricerca.</div></div>`;
+  }
+  const rows = items.map(item => `
+    <div class="menu-item">
+      <div class="menu-item-name">
+        ${item.n}
+        ${item.novita ? '<span class="badge-novita">NOVITÀ</span>' : ''}
+        ${item.veg ? '<span class="badge-veg">VEG</span>' : ''}
+      </div>
+      <div class="menu-item-price">€ ${item.p}</div>
+      <div class="menu-item-desc">${item.d}</div>
+    </div>
+  `).join('');
+  return `<div class="menu-board">
+    <div class="menu-board-title">${CAT_LABELS[catKey]}</div>
+    ${rows}
+  </div>`;
+}
+
+function renderMenu() {
+  const list = document.getElementById('menuList');
+  const q = currentQuery.trim();
+
+  if (q) {
+    // search mode: show all categories with matching items, hide empty (incl. fritti)
+    const html = Object.keys(MENU).map(cat => {
+      if (cat === 'fritti') return '';
+      const filtered = MENU[cat].filter(i => matchesQuery(i, q));
+      if (filtered.length === 0) return '';
+      return renderBoard(cat, filtered);
+    }).filter(Boolean).join('');
+    list.innerHTML = html || `<div class="menu-board"><div class="empty-state">
+      Nessun risultato per "<strong>${q}</strong>".<br>
+      <span class="text-base font-sans opacity-80">Prova con un altro ingrediente o un altro nome.</span>
+    </div></div>`;
+  } else {
+    list.innerHTML = renderBoard(currentCat, MENU[currentCat]);
+  }
+}
+
+renderMenu();
+
+document.querySelectorAll('#menuTabs .tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#menuTabs .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    // clear search when switching tab
+    const searchInput = document.getElementById('menuSearch');
+    if (searchInput.value) { searchInput.value = ''; currentQuery = ''; }
+    renderMenu();
+  });
+});
+
+document.getElementById('menuSearch').addEventListener('input', (e) => {
+  currentQuery = e.target.value;
+  // visually unselect tabs while searching
+  if (currentQuery.trim()) {
+    document.querySelectorAll('#menuTabs .tab-btn').forEach(b => b.classList.remove('active'));
+  } else {
+    document.querySelector(`#menuTabs .tab-btn[data-cat="${currentCat}"]`).classList.add('active');
+  }
+  renderMenu();
+});
+
+// Render bibite
+document.getElementById('bibiteList').innerHTML = BIBITE.map(([n,p]) =>
+  `<div class="bib-row"><span>${n}</span><span class="font-bungee" style="color: var(--giallo);">€ ${p}</span></div>`
+).join('');
+
+// COMPONI
+const state = {
+  base: null,        // "affettato" | "carne"
+  basePrice: 0,
+  baseItem: null,
+  salsa: null,
+  formaggi: new Set(),
+  verdure: new Set(),
+};
+
+function fmt(n) { return "€ " + n.toFixed(2).replace('.', ','); }
+
+function renderChips() {
+  const baseList = document.getElementById('baseList');
+  const baseLabel = document.getElementById('baseLabel');
+  if (!state.base) {
+    baseList.innerHTML = '<p class="opacity-60 text-sm italic">Scegli prima Affettato o Carne sopra.</p>';
+    baseLabel.textContent = 'base';
+  } else {
+    baseLabel.textContent = state.base === 'affettato' ? 'affettato' : 'carne';
+    baseList.innerHTML = ING[state.base].map(i => `
+      <span class="chip ${state.baseItem===i.n?'selected':''}" data-type="baseItem" data-name="${i.n}">${i.n}</span>
+    `).join('');
+  }
+  document.getElementById('salseList').innerHTML = ING.salse.map(i => `
+    <span class="chip ${state.salsa===i.n?'selected':''}" data-type="salsa" data-name="${i.n}">${i.n}</span>
+  `).join('');
+  document.getElementById('formaggiList').innerHTML = ING.formaggi.map(i => `
+    <span class="chip ${state.formaggi.has(i.n)?'selected':''}" data-type="formaggi" data-name="${i.n}" data-price="${i.p}">
+      ${i.n} <span class="chip-price">+${fmt(i.p)}</span>
+    </span>
+  `).join('');
+  document.getElementById('verdureList').innerHTML = ING.verdure.map(i => `
+    <span class="chip ${state.verdure.has(i.n)?'selected':''}" data-type="verdure" data-name="${i.n}" data-price="${i.p}">
+      ${i.n} <span class="chip-price">+${fmt(i.p)}</span>
+    </span>
+  `).join('');
+  bindChips();
+  renderRiepilogo();
+}
+
+function bindChips() {
+  document.querySelectorAll('.chip').forEach(el => {
+    el.onclick = () => {
+      const t = el.dataset.type;
+      const n = el.dataset.name;
+      if (t === 'baseItem') state.baseItem = state.baseItem === n ? null : n;
+      else if (t === 'salsa') state.salsa = state.salsa === n ? null : n;
+      else if (t === 'formaggi') state.formaggi.has(n) ? state.formaggi.delete(n) : state.formaggi.add(n);
+      else if (t === 'verdure') state.verdure.has(n) ? state.verdure.delete(n) : state.verdure.add(n);
+      renderChips();
+    };
+  });
+}
+
+function renderRiepilogo() {
+  const ul = document.getElementById('riepilogo');
+  if (!state.base) {
+    ul.innerHTML = '<li class="opacity-60 italic">Seleziona la base per iniziare…</li>';
+    document.getElementById('totale').textContent = fmt(0);
+    return;
+  }
+  let total = state.basePrice;
+  const rows = [];
+  rows.push(`<li>• <strong>Base:</strong> ${state.base === 'affettato' ? 'Affettato + Salsa' : 'Carne + Salsa'} <span class="opacity-70">(${fmt(state.basePrice)})</span></li>`);
+  if (state.baseItem) rows.push(`<li>• <strong>${state.base==='affettato'?'Affettato':'Carne'}:</strong> ${state.baseItem}</li>`);
+  if (state.salsa) rows.push(`<li>• <strong>Salsa:</strong> ${state.salsa}</li>`);
+  state.formaggi.forEach(n => {
+    const p = ING.formaggi.find(x => x.n===n).p; total += p;
+    rows.push(`<li>• Formaggio: ${n} <span class="opacity-70">(+${fmt(p)})</span></li>`);
+  });
+  state.verdure.forEach(n => {
+    const p = ING.verdure.find(x => x.n===n).p; total += p;
+    rows.push(`<li>• Verdura: ${n} <span class="opacity-70">(+${fmt(p)})</span></li>`);
+  });
+  ul.innerHTML = rows.join('');
+  document.getElementById('totale').textContent = fmt(total);
+
+  // Riepilogo testuale per copia (utile da leggere al telefono)
+  const lines = [
+    "Il mio panino — Il Panino da Omar:",
+    `- Base: ${state.base==='affettato'?'Affettato + Salsa (€6,00)':'Carne + Salsa (€7,00)'}`,
+    state.baseItem ? `- ${state.base==='affettato'?'Affettato':'Carne'}: ${state.baseItem}` : null,
+    state.salsa ? `- Salsa: ${state.salsa}` : null,
+    state.formaggi.size ? `- Formaggi: ${[...state.formaggi].join(', ')}` : null,
+    state.verdure.size ? `- Verdure: ${[...state.verdure].join(', ')}` : null,
+    `Totale: ${fmt(total)}`,
+  ].filter(Boolean).join('\n');
+  document.getElementById('copiaRiepilogo').dataset.text = lines;
+}
+
+// Copia riepilogo negli appunti
+document.getElementById('copiaRiepilogo').addEventListener('click', async () => {
+  const text = document.getElementById('copiaRiepilogo').dataset.text;
+  if (!text || !state.base) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    const ok = document.getElementById('copiaOk');
+    ok.style.opacity = '1';
+    setTimeout(() => { ok.style.opacity = '0'; }, 1800);
+  } catch (e) {
+    alert(text);
+  }
+});
+
+document.querySelectorAll('.base-btn').forEach(b => {
+  b.onclick = () => {
+    state.base = b.dataset.base;
+    state.basePrice = state.base === 'affettato' ? 6.00 : 7.00;
+    state.baseItem = null;
+    document.querySelectorAll('.base-btn').forEach(x => x.style.borderColor = 'rgba(245,197,24,0.25)');
+    b.style.borderColor = 'var(--giallo)';
+    renderChips();
+  };
+});
+
+renderChips();
+</script>
+</body>
+</html>
